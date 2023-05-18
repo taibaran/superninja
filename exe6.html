@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        td {
+            border: 1px solid black;
+            width: 40px;
+            height: 40px;
+        }
+
+        .tdBlack {
+            background-color: black;
+        }
+
+        .tdWhite {
+            background-color: white;
+        }
+    </style>
+    <script>
+        var hit = 0;
+        var str = document.createElement("var");
+        var totalmoney = document.createElement("h3");
+        var totalround = document.createElement("h3");
+        var restart = document.createElement("input");
+        restart.setAttribute("type", "button");
+        restart.setAttribute("value", "restart");
+        var newGame = document.createElement("input");
+        newGame.setAttribute("type", "button");
+        newGame.setAttribute("value", "new game");
+        restart.onclick = function () {reset(); };
+        newGame.onclick = function () { newg(); };
+
+        function Player(money) {
+            this.numbers = [];
+            this.money = money;
+
+        }
+        Player.prototype.addNumber = function (number) {
+            this.numbers.push(number);
+        }
+
+        Player.prototype.addMoney = function (money) {
+            this.money += money;
+        }
+
+        function game(player1, compPlayer, round) {
+
+            this.player1 = player1;
+            this.compPlayer = compPlayer;
+            this.round = round;
+        }
+
+        game.prototype.addRound = function () {
+            this.round++;
+        }
+        game.prototype.createCompPlayerRandNumbers = function () {
+            var arr64 = [];
+            for (var c1 = 1; c1 < 65; c1++) {
+                arr64[c1] = c1;
+            }
+            arr64 = shuffle(arr64);
+            for (var c2 = 0; c2 < 5; c2++) {
+                this.compPlayer.addNumber('a' + parseInt(arr64[c2]));
+            }
+        }
+        function shuffle(arr64) {
+            var j;
+            for (var i = arr64.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * i);
+                x = arr64[i];
+                arr64[i] = arr64[j];
+                arr64[j] = x;
+            }
+            return arr64;
+        }
+        game.prototype.createBoard = function () {
+            hit = 0;
+            totalmoney.innerHTML = "Money:" + player1.money;
+            totalround.innerHTML = "round: " + parseInt(g.round + 1);
+            str.innerHTML = "";
+            const newTBL = document.createElement("table");
+            var flag = -1;
+            for (var i = 0; i < 8; i++)
+            {
+                const newtr = document.createElement("tr");
+                for (var j = 0; j < 8; j++)
+                {
+                    if (flag == -1) {
+                        const newtd1 = document.createElement("td");
+                        newtd1.id = "a" + parseInt((i * 8) + (j + 1));
+                        newtd1.className = "tdBlack";
+                        newtd1.onclick = function () { colorChanger(this); plusOne(); };
+                        newtr.appendChild(newtd1);
+                    }
+                    else {
+                        const newtd2 = document.createElement("td");
+                        newtd2.id ="a"+parseInt((i * 8) + (j + 1));
+                        newtd2.className = "tdWhite";
+                        newtd2.onclick = function () { colorChanger(this); plusOne(); };
+                        newtr.appendChild(newtd2);
+                    }
+                    flag = flag * -1;
+                }
+                newTBL.appendChild(newtr);
+                flag = 8 % 2 == 0 ? flag * -1 : flag;
+            }
+            str.appendChild(newTBL);
+            str.appendChild(totalmoney);
+            str.appendChild(totalround);
+            document.body.appendChild(str);
+            document.body.appendChild(restart);
+            document.body.appendChild(newGame);
+        }
+        var player1 = new Player(50);
+        var player2 = new Player(-1);
+        var g = new game(player1, player2, 0);
+        g.createCompPlayerRandNumbers();
+        console.log(g.compPlayer.numbers);
+
+        function colorChanger(el) {
+            if (g.round <= 4 && el.style.backgroundColor != 'green') {
+                el.style.backgroundColor = 'green';
+                g.addRound();
+                player1.addNumber(el.id);
+                for (j in player2.numbers)
+                {
+                    if (el.id == player2.numbers[j])
+                    {
+                        alert("you hit!");
+                        document.getElementById(el.id).innerHTML = ":)";
+                        hit++;
+                        if (hit == 2)
+                        {
+                            player1.addMoney(100);
+                            totalmoney.innerText = "Money:" + player1.money;
+                            totalround.innerText = "round: " + parseInt(g.round+1);
+
+                        }
+                        if (hit > 2)
+                        {
+                            player1.addMoney(50);
+                            totalmoney.innerText = "Money:" + player1.money;
+                            totalround.innerText = "round: " + parseInt(g.round+1);
+                        }
+                    }
+                }
+            }
+        }
+        function plusOne() {
+
+            if (g.round == 5) {
+
+                for (c in player2.numbers) {
+                    document.getElementById(player2.numbers[c]).style.backgroundColor = "yellow";
+                }
+            }
+            if (g.round<5) {
+                totalmoney.innerText = "Money:" + player1.money;
+                totalround.innerText = "round: " + parseInt(g.round+1);
+            }
+            if (g.round == 5 && hit < 2) {
+                player1.addMoney(-50);
+                totalmoney.innerText = "Money:" + player1.money;
+                g.addRound();
+            }
+
+        }
+        function reset() {
+            g.compPlayer.numbers=[]
+            player1.money = 50;
+            hit = 0;
+            g.round = 0;
+            g.createBoard();
+            g.createCompPlayerRandNumbers();
+        }
+        function newg() {
+            g.compPlayer.numbers = []
+            hit = 0;
+            g.round = 0;
+            g.createBoard();
+            g.createCompPlayerRandNumbers();
+        }
+    </script>
+</head>
+<body onload="g.createBoard()">
+</body>
+</html>
