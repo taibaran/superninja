@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+        td {
+            border: 1px solid black;
+            width: 30px;
+            height: 30px;
+        }
+
+        .tdBlack {
+            background-color: black;
+        }
+
+        .tdWhite {
+            background-color: white;
+        }
+    </style>
+    <script>
+        var round;
+        var money = 50;
+        var counter;
+        var hit = 0;
+
+        function plusOne() {
+
+            if (round == 5) {
+                for (c in randboxes) {
+                    document.getElementById(randboxes[c]).style.backgroundColor = "yellow";
+                }
+                if (hit < 2)
+                    money = money - 50;
+            }
+            else {
+                round++;
+                document.getElementById("spn").innerHTML = "round: " + round + "</br>money: " + money;
+            }
+        }
+        function colorChanger(el) {
+            if (counter <= 5) {
+                el.style.backgroundColor = 'green';
+                counter++;
+                for (j in randboxes) {
+                    if (el.id == randboxes[j]) {
+                        alert("you hit!");
+                        hit++;
+                        if (hit == 2)
+                            money += 100;
+                        if (hit > 2)
+                            money += 50;
+                        document.getElementById(el.id).innerHTML = ":)";
+                    }
+
+                }
+            }
+        }
+        function shuffle(arr64) {
+            var j;
+            for (var i = arr64.length - 1; i > 0; i--) {
+                j = Math.floor(Math.random() * i);
+                x = arr64[i];
+                arr64[i] = arr64[j];
+                arr64[j] = x;
+            }
+            return arr64;
+        }
+
+        function rand5() {
+            var rand_numbers = [];
+            var arr64 = [];
+            for (var c1 = 1; c1 < 65; c1++) {
+                arr64[c1] = c1;
+            }
+            arr64 = shuffle(arr64);
+            for (var c2 = 0; c2 < 5; c2++) {
+                rand_numbers.push('a' + parseInt(arr64[c2]));
+            }
+            console.log(rand_numbers);
+            return rand_numbers;
+        }
+
+
+        function game() {
+            hit = 0;
+            randboxes = rand5();
+            round = 1;
+            counter = 1;
+            document.getElementById("spn").innerHTML = "round: " + round + "</br>money: " + money;
+            var str = "";
+            str += "<table>";
+            var flag = -1;
+            for (var i = 0; i < 8; i++) {
+                str += "<tr>";
+                for (var j = 0; j < 8; j++) {
+                    if (flag == -1) {
+                        str += '<td id="a' + parseInt((i * 8) + (j + 1)) + '"class="tdBlack" onclick="colorChanger(this) ; plusOne()" > </td>';
+                    }
+                    else {
+                        str += '<td id="a' + parseInt((i * 8) + (j + 1)) + '"class="tdWhite" onclick="colorChanger(this) ;plusOne()"> </td>';
+                    }
+                    flag = flag * -1;
+
+                }
+                str += "</tr>";
+                flag = 8 % 2 == 0 ? flag * -1 : flag;
+
+            }
+            str += "<table>";
+            console.log(randboxes);
+            document.getElementById("ph").innerHTML = str;
+
+        }
+        function restart() {
+            money = 50;
+            game();
+        }
+    </script>
+</head>
+
+<body onload="game()">
+    <div id="ph"></div>
+    <h1 id="spn"></h1>
+    <input type="button" value="new game" onclick="game()" />
+    <input type="button" value="restart" onclick="restart()" />
+
+
+</body>
+</html>
